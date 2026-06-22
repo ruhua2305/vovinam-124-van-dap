@@ -50,7 +50,7 @@
     border-bottom:1px solid var(--line);
   }
   .emblem{
-    width:54px;height:54px;margin:0 auto 14px;display:block;
+    width:auto;height:72px;margin:0 auto 14px;display:block;
   }
   .eyebrow{
     font-family:var(--font-mono);
@@ -362,14 +362,7 @@
 <div class="app">
 
   <header class="top">
-    <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
-      <path d="M50 4 L92 18 V52 C92 76 74 92 50 98 C26 92 8 76 8 52 V18 Z" fill="#F2B705"/>
-      <circle cx="50" cy="52" r="30" fill="#F6F1E4"/>
-      <path d="M50 22 A30 30 0 0 1 50 82 A15 15 0 0 1 50 52 A15 15 0 0 0 50 22Z" fill="#13213D"/>
-      <path d="M50 22 A30 30 0 0 0 50 82 A15 15 0 0 0 50 52 A15 15 0 0 1 50 22Z" fill="#D7263D"/>
-      <circle cx="50" cy="37" r="5" fill="#D7263D"/>
-      <circle cx="50" cy="67" r="5" fill="#13213D"/>
-    </svg>
+    <img class="emblem" src="Phu_hieu_vovinam.png" alt="Logo Vovinam Việt Võ Đạo">
     <p class="eyebrow">Tự luyện vấn đáp · Lý thuyết Vovinam</p>
     <h1 class="title">Vấn đáp <em>Võ 2</em></h1>
     <p class="subtitle">Bốc thăm như thi thật, đọc câu hỏi to lên, trả lời bằng giọng nói và tự chấm nhanh độ đầy đủ so với đáp án mẫu.</p>
@@ -378,7 +371,6 @@
 
   <main>
 
-    <!-- SCREEN 1: DRAW -->
     <section class="screen active" id="screen-draw">
       <div class="card">
         <p class="section-label">Bước 1 · Bốc thăm</p>
@@ -395,7 +387,6 @@
       </div>
     </section>
 
-    <!-- SCREEN 2: QUIZ -->
     <section class="screen" id="screen-quiz">
       <div class="progress-row" id="progressRow"></div>
       <div class="card">
@@ -452,7 +443,6 @@
       </div>
     </section>
 
-    <!-- SCREEN 3: RESULT -->
     <section class="screen" id="screen-result">
       <div class="card">
         <p class="section-label">Kết quả tự luyện</p>
