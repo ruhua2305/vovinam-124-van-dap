@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vấn đáp Vovinam · Võ 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#13213D;
+    --navy-deep:#0B1428;
+    --navy-card:#1B2B4D;
+    --gold:#F2B705;
+    --gold-soft:#F8D766;
+    --red:#D7263D;
+    --paper:#F6F1E4;
+    --paper-dim:#E7E0CC;
+    --ink:#16213D;
+    --ink-soft:rgba(22,33,61,.62);
+    --line:rgba(247,243,232,.14);
+    --line-dark:rgba(22,33,61,.12);
+    --radius:16px;
+    --font-display:'Be Vietnam Pro',sans-serif;
+    --font-body:'Be Vietnam Pro',sans-serif;
+    --font-mono:'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 600px at 12% -10%, #1d3361 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, #24345c 0%, transparent 55%),
+      var(--navy-deep);
+    color:var(--paper);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .app{max-width:640px;margin:0 auto;padding:0 0 64px;}
+  a,button{font-family:inherit;}
+  button{cursor:pointer;}
+  :focus-visible{outline:3px solid var(--gold-soft);outline-offset:2px;}
+
+  /* ---------- header ---------- */
+  header.top{
+    padding:36px 20px 28px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  .emblem{
+    width:54px;height:54px;margin:0 auto 14px;display:block;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--gold-soft);margin:0 0 6px;
+  }
+  h1.title{
+    font-family:var(--font-display);
+    font-weight:900;
+    font-size:clamp(28px,7vw,38px);
+    line-height:1.05;
+    margin:0 0 8px;
+    letter-spacing:-.01em;
+  }
+  h1.title em{
+    font-style:normal;
+    color:var(--gold);
+  }
+  .subtitle{
+    color:var(--paper-dim);
+    font-size:14.5px;
+    line-height:1.55;
+    max-width:46ch;
+    margin:0 auto;
+  }
+  .support-note{
+    margin:14px auto 0;
+    max-width:46ch;
+    font-size:12.5px;
+    color:var(--red);
+    background:rgba(215,38,61,.12);
+    border:1px solid rgba(215,38,61,.35);
+    border-radius:10px;
+    padding:8px 12px;
+    display:none;
+  }
+  .support-note.show{display:block;}
+
+  main{padding:28px 18px 0;}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .35s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ---------- card shell ---------- */
+  .card{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow:0 18px 40px rgba(0,0,0,.28);
+  }
+  .card + .card{margin-top:16px;}
+
+  /* ---------- draw screen ---------- */
+  .section-label{
+    font-family:var(--font-mono);
+    font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold-soft);margin:0 0 10px;
+  }
+  .draw-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:9px;
+  }
+  .tile{
+    aspect-ratio:1/1;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(247,243,232,.06);
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-family:var(--font-mono);
+    font-weight:700;
+    font-size:15px;
+    color:var(--paper-dim);
+    transition:transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .tile.flash{
+    background:rgba(242,183,5,.22);
+    border-color:var(--gold-soft);
+    color:var(--gold-soft);
+    transform:scale(1.07);
+  }
+  .tile.picked{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--navy-deep);
+    transform:scale(1.08);
+  }
+  .tile.picked-long{
+    background:var(--red);
+    border-color:var(--red);
+    color:var(--paper);
+    transform:scale(1.08);
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tile{transition:none;}
+  }
+
+  .draw-actions{margin-top:18px;display:flex;flex-direction:column;gap:10px;align-items:center;}
+  .picks-summary{
+    font-size:14px;color:var(--paper-dim);
+    min-height:20px;text-align:center;
+  }
+  .picks-summary b{color:var(--gold-soft);font-weight:700;}
+  .picks-summary .tag-long{
+    color:var(--red);
+    background:rgba(215,38,61,.12);
+    border:1px solid rgba(215,38,61,.35);
+    border-radius:999px;
+    padding:1px 8px;
+    font-size:11.5px;
+    margin-left:6px;
+    font-family:var(--font-mono);
+  }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    border-radius:999px;
+    padding:13px 24px;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-primary{background:var(--gold);color:var(--navy-deep);}
+  .btn-ghost{background:transparent;color:var(--paper-dim);border:1px solid var(--line);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:9px 16px;font-size:13px;}
+
+  /* ---------- study list toggle ---------- */
+  details.study-list{margin-top:18px;}
+  details.study-list summary{
+    cursor:pointer;
+    font-size:13.5px;
+    color:var(--paper-dim);
+    list-style:none;
+    display:flex;align-items:center;gap:6px;
+  }
+  details.study-list summary::-webkit-details-marker{display:none;}
+  details.study-list summary::before{content:"▸";color:var(--gold-soft);}
+  details.study-list[open] summary::before{content:"▾";}
+  .study-list ol{
+    margin:12px 0 0;padding-left:0;
+    list-style:none;
+    counter-reset:q 10;
+    font-size:13.5px;
+    color:var(--paper-dim);
+  }
+  .study-list li{
+    counter-increment:q;
+    padding:9px 0;
+    border-top:1px solid var(--line);
+    display:flex;gap:10px;
+  }
+  .study-list li::before{
+    content:counter(q);
+    font-family:var(--font-mono);
+    color:var(--gold-soft);
+    flex:0 0 auto;
+    min-width:20px;
+  }
+
+  /* ---------- quiz screen ---------- */
+  .progress-row{display:flex;gap:6px;margin-bottom:14px;}
+  .dot{
+    flex:1;height:5px;border-radius:99px;background:var(--line);
+    overflow:hidden;
+  }
+  .dot.fill{background:var(--gold);}
+  .dot.current{background:var(--gold-soft);}
+
+  .q-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .q-no{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase;}
+  .pill-long{
+    font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;
+    background:rgba(215,38,61,.1);color:var(--red);
+    border:1px solid rgba(215,38,61,.35);
+    border-radius:999px;padding:2px 9px;display:none;
+  }
+  .pill-long.show{display:inline-block;}
+
+  .q-text{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:19px;
+    line-height:1.4;
+    margin:4px 0 18px;
+  }
+
+  .controls-row{display:flex;gap:10px;margin-bottom:14px;}
+  .mic-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:10px 0 16px;}
+  .mic-btn{
+    width:72px;height:72px;border-radius:50%;
+    background:var(--navy);
+    color:var(--paper);
+    border:3px solid var(--gold);
+    font-size:26px;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .mic-btn.recording{
+    background:var(--red);
+    border-color:var(--red);
+    box-shadow:0 0 0 8px rgba(215,38,61,.18);
+    animation:pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 6px rgba(215,38,61,.16);}
+    50%{box-shadow:0 0 0 14px rgba(215,38,61,.05);}
+  }
+  @media (prefers-reduced-motion:reduce){.mic-btn.recording{animation:none;}}
+  .mic-label{font-size:13px;color:var(--ink-soft);font-weight:600;text-align:center;}
+
+  .transcript-box{
+    background:rgba(22,33,61,.04);
+    border:1.5px dashed var(--line-dark);
+    border-radius:12px;
+    padding:14px;
+    min-height:64px;
+    font-size:14.5px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .transcript-box .placeholder{color:var(--ink-soft);font-style:italic;}
+  .transcript-box .interim{color:var(--ink-soft);}
+  .mic-error{
+    font-size:12.5px;color:var(--red);margin-top:8px;text-align:center;
+  }
+
+  .reveal-zone{margin-top:18px;}
+  .score-wrap{
+    display:flex;align-items:center;gap:14px;
+    background:rgba(242,183,5,.10);
+    border:1px solid rgba(242,183,5,.35);
+    border-radius:12px;
+    padding:14px;
+  }
+  .score-num{font-family:var(--font-mono);font-weight:700;font-size:30px;color:var(--ink);min-width:64px;}
+  .score-bar{flex:1;height:8px;border-radius:99px;background:var(--line-dark);overflow:hidden;}
+  .score-bar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .5s ease;}
+  .score-caption{font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
+
+  .chip-group{margin-top:14px;}
+  .chip-group h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px;font-family:var(--font-mono);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{
+    font-size:12.5px;padding:5px 10px;border-radius:999px;
+    border:1px solid var(--line-dark);
+  }
+  .chip.matched{background:rgba(34,140,90,.12);border-color:rgba(34,140,90,.4);color:#1c6b48;}
+  .chip.missing{background:rgba(22,33,61,.04);color:var(--ink-soft);}
+
+  details.full-answer{margin-top:16px;}
+  details.full-answer summary{
+    cursor:pointer;font-weight:700;font-size:13.5px;color:var(--ink);
+    list-style:none;display:flex;align-items:center;gap:6px;
+  }
+  details.full-answer summary::-webkit-details-marker{display:none;}
+  details.full-answer summary::before{content:"▸";color:var(--red);}
+  details.full-answer[open] summary::before{content:"▾";}
+  .full-answer .answer-text{
+    white-space:pre-line;
+    font-size:14px;line-height:1.65;
+    color:var(--ink);
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--line-dark);
+  }
+
+  .nav-row{display:flex;gap:10px;margin-top:20px;}
+  .nav-row .btn{flex:1;}
+
+  /* ---------- result screen ---------- */
+  .result-avg{text-align:center;margin-bottom:18px;}
+  .result-avg .num{
+    font-family:var(--font-mono);font-weight:700;
+    font-size:54px;color:var(--gold);line-height:1;
+  }
+  .result-avg .lbl{color:var(--paper-dim);font-size:13px;margin-top:6px;}
+
+  .result-item{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 0;border-top:1px solid var(--line-dark);
+  }
+  .result-item:first-child{border-top:none;}
+  .result-item .ri-no{
+    font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);
+    min-width:34px;
+  }
+  .result-item .ri-text{flex:1;font-size:13.5px;color:var(--ink);line-height:1.4;}
+  .result-item .ri-score{
+    font-family:var(--font-mono);font-weight:700;font-size:15px;
+    min-width:46px;text-align:right;
+  }
+  .ri-score.good{color:#1c6b48;}
+  .ri-score.mid{color:#9a7300;}
+  .ri-score.low{color:var(--red);}
+
+  footer.foot{
+    text-align:center;color:var(--paper-dim);font-size:12px;
+    padding:30px 20px 0;line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M50 4 L92 18 V52 C92 76 74 92 50 98 C26 92 8 76 8 52 V18 Z" fill="#F2B705"/>
+      <circle cx="50" cy="52" r="30" fill="#F6F1E4"/>
+      <path d="M50 22 A30 30 0 0 1 50 82 A15 15 0 0 1 50 52 A15 15 0 0 0 50 22Z" fill="#13213D"/>
+      <path d="M50 22 A30 30 0 0 0 50 82 A15 15 0 0 0 50 52 A15 15 0 0 1 50 22Z" fill="#D7263D"/>
+      <circle cx="50" cy="37" r="5" fill="#D7263D"/>
+      <circle cx="50" cy="67" r="5" fill="#13213D"/>
+    </svg>
+    <p class="eyebrow">Tự luyện vấn đáp · Lý thuyết Vovinam</p>
+    <h1 class="title">Vấn đáp <em>Võ 2</em></h1>
+    <p class="subtitle">Bốc thăm như thi thật, đọc câu hỏi to lên, trả lời bằng giọng nói và tự chấm nhanh độ đầy đủ so với đáp án mẫu.</p>
+    <p class="support-note" id="supportNote">Trình duyệt này chưa hỗ trợ nhận diện giọng nói. Hãy dùng Chrome hoặc Edge (máy tính hoặc Android) để ghi âm câu trả lời — bạn vẫn có thể nghe câu hỏi và tự đối chiếu đáp án.</p>
+  </header>
+
+  <main>
+
+    <!-- SCREEN 1: DRAW -->
+    <section class="screen active" id="screen-draw">
+      <div class="card">
+        <p class="section-label">Bước 1 · Bốc thăm</p>
+        <div class="draw-grid" id="drawGrid"></div>
+        <div class="draw-actions">
+          <p class="picks-summary" id="picksSummary">Nhấn nút bên dưới để bốc 3 câu, đúng như quy định thi vấn đáp.</p>
+          <button class="btn btn-primary" id="btnDraw">🎲 Bốc thăm câu hỏi</button>
+          <button class="btn btn-ghost" id="btnStart" style="display:none;">Bắt đầu vấn đáp →</button>
+        </div>
+        <details class="study-list">
+          <summary>Xem trước cả 20 câu hỏi Võ 2</summary>
+          <ol id="studyList" start="11"></ol>
+        </details>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: QUIZ -->
+    <section class="screen" id="screen-quiz">
+      <div class="progress-row" id="progressRow"></div>
+      <div class="card">
+        <div class="q-meta">
+          <span class="q-no" id="qNo">Câu hỏi</span>
+          <span class="pill-long" id="qLongPill">Đáp dài</span>
+        </div>
+        <p class="q-text" id="qText"></p>
+
+        <div class="controls-row">
+          <button class="btn btn-ghost btn-sm" id="btnListen">🔊 Nghe câu hỏi</button>
+        </div>
+
+        <div class="mic-wrap">
+          <button class="mic-btn" id="btnMic" aria-pressed="false">🎤</button>
+          <p class="mic-label" id="micLabel">Nhấn để bắt đầu trả lời</p>
+          <p class="mic-error" id="micError"></p>
+        </div>
+
+        <div class="transcript-box" id="transcriptBox" aria-live="polite">
+          <span class="placeholder">Bản ghi câu trả lời của bạn sẽ hiện ở đây…</span>
+        </div>
+
+        <div class="reveal-zone">
+          <button class="btn btn-ghost btn-block" id="btnReveal">✅ Xem đáp án &amp; chấm nhanh</button>
+
+          <div id="scorePanel" style="display:none;">
+            <div class="score-wrap">
+              <div class="score-num" id="scoreNum">0%</div>
+              <div style="flex:1;">
+                <div class="score-bar"><i id="scoreBar" style="width:0%"></i></div>
+                <p class="score-caption">Ước lượng theo các ý chính có trong đáp án mẫu — không phải điểm chính thức, hãy tự đối chiếu thêm.</p>
+              </div>
+            </div>
+            <div class="chip-group">
+              <h4>Ý đã nhắc đến</h4>
+              <div class="chips" id="chipsMatched"></div>
+            </div>
+            <div class="chip-group">
+              <h4>Ý còn thiếu</h4>
+              <div class="chips" id="chipsMissing"></div>
+            </div>
+            <details class="full-answer">
+              <summary>Xem đáp án đầy đủ</summary>
+              <p class="answer-text" id="fullAnswerText"></p>
+            </details>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" id="btnPrev">← Câu trước</button>
+          <button class="btn btn-primary" id="btnNext">Câu tiếp theo →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: RESULT -->
+    <section class="screen" id="screen-result">
+      <div class="card">
+        <p class="section-label">Kết quả tự luyện</p>
+        <div class="result-avg">
+          <div class="num" id="avgScore">0%</div>
+          <div class="lbl">mức độ đầy đủ trung bình</div>
+        </div>
+        <div id="resultList"></div>
+        <div class="draw-actions" style="margin-top:8px;">
+          <button class="btn btn-primary" id="btnRetry">🔁 Bốc thăm bộ câu khác</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    Dữ liệu câu hỏi &amp; đáp án trích từ bộ đề lý thuyết Vovinam Việt Võ Đạo — ĐH FPT.<br>
+    Công cụ tự luyện, không thay thế đánh giá chính thức của giảng viên.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===================== DATA: 20 CÂU HỎI VÕ 2 (docNo 11–30) ===================== */
+  var QUESTIONS = [
+    {
+      docNo:11, long:true,
+      q:"Ý nghĩa phù hiệu và kỳ hiệu Vovinam Việt Võ Đạo?",
+      a:"Về màu sắc: Phù hiệu (logo) và kỳ hiệu (cờ) Việt Võ Đạo có 4 màu:\n1) Xanh: nói về nguyên tố âm (âm tố), tượng trưng biển cả và hi vọng.\n2) Đỏ: nguyên tố dương (dương tố), tượng trưng cho lửa sống, sự đấu tranh hào hùng, kiên quyết.\n3) Vàng: màu của sự vinh quang hiển hách.\n4) Trắng: màu của thanh khiết chân tịnh, cao cả và thâm viễn tuyệt vời.\n\nVề hình nét: Phù hiệu nền vàng, nửa trên vuông, nửa dưới hình tròn ghép lại tượng trưng cho nguyên lý Cương Nhu phối triển của Việt Võ Đạo, biểu thị sự toàn chân, toàn thiện.\n1) Vòng tròn nhỏ xanh đỏ ở trong biểu thị cho âm và dương, vạch chữ S ở giữa bao hàm ý nghĩa tương giao, tương sinh và thường dịch trong vũ trụ.\n2) Vòng tròn lớn bao quanh vòng tròn nhỏ trắng biểu tượng cho \"đạo thể\" với nhiệm vụ phối hợp, điều hoà, khắc chế, bao dung.\n\nKích thước kỳ hiệu: nền vàng, chiều ngang bằng 3/5 chiều dài; vòng âm dương đạo bằng 1/3 chiều ngang.",
+      keywords:["4 màu","âm tố biển cả hi vọng","dương tố lửa sống đấu tranh","vàng vinh quang hiển hách","trắng thanh khiết cao cả","nửa trên vuông nửa dưới tròn","Cương Nhu phối triển","chữ S tương giao tương sinh","đạo thể phối hợp điều hoà"]
+    },
+    {
+      docNo:12, long:false,
+      q:"Giới thiệu về võ sư sáng tổ?",
+      a:"Họ tên của cố võ sư sáng tổ là Nguyễn Lộc.\nSinh ngày 08 tháng 4 năm Nhâm Tý (24/05/1912).\nNơi sinh ở làng Hữu Bằng, huyện Thạch Thất, tỉnh Sơn Tây cũ (nay là Hà Nội).\nQua đời ngày mồng 4 tháng 4 năm Canh Tý (29/4/1960), tại Sài Gòn (Tp. Hồ Chí Minh).\nDi cốt của thầy đang được bảo quản tại số 31 đường Sư Vạn Hạnh, quận 10, TP HCM.",
+      keywords:["Nguyễn Lộc","sinh 1912","làng Hữu Bằng Thạch Thất","mất 1960 Sài Gòn","di cốt 31 Sư Vạn Hạnh"]
+    },
+    {
+      docNo:13, long:false,
+      q:"Cố võ sư sáng tổ hoàn thành việc nghiên cứu Vovinam vào năm nào? Cuộc biểu diễn Vovinam đầu tiên được tổ chức tại đâu?",
+      a:"Cố võ sư Sáng Tổ Nguyễn Lộc hoàn thành cuộc nghiên cứu Vovinam năm 1938.\nCuộc biểu diễn Vovinam đầu tiên ra mắt công chúng được tổ chức tại Nhà hát lớn Hà Nội vào mùa Thu năm 1939.",
+      keywords:["hoàn thành nghiên cứu 1938","biểu diễn đầu tiên Nhà hát lớn Hà Nội","mùa Thu 1939"]
+    },
+    {
+      docNo:14, long:false,
+      q:"Lớp dạy Vovinam công khai đầu tiên được tổ chức tại đâu, năm bao nhiêu? Hiện nay Vovinam đang có mặt ở bao nhiêu quốc gia trên thế giới?",
+      a:"Lớp dạy Vovinam công khai đầu tiên được khai giảng tại trường Sư Phạm (École Normal) đường Cửa Bắc, Hà Nội vào mùa xuân năm 1940.\nMôn võ Vovinam Việt Võ Đạo đã phát triển ở hơn 70 quốc gia và vùng lãnh thổ trên thế giới, được đánh giá là môn võ có rất nhiều tiềm năng phát triển.",
+      keywords:["trường Sư Phạm Cửa Bắc Hà Nội","mùa xuân 1940","hơn 70 quốc gia vùng lãnh thổ"]
+    },
+    {
+      docNo:15, long:false,
+      q:"Hãy nêu sơ lược hiểu biết về cố võ sư chưởng môn Lê Sáng?",
+      a:"Trước khi qua đời, cố Võ sư Sáng tổ Nguyễn Lộc giao quyền lãnh đạo và phát triển môn phái lại cho Võ sư Lê Sáng.\nVõ sư Lê Sáng là Chưởng môn của môn phái Vovinam – Việt Võ Đạo từ năm 1960 đến 2010. Ông sinh năm 1920 tại Hà Nội và mất ngày 27/09/2010 tại TP.HCM. Di cốt của thầy hiện được lưu giữ tại Tổ đường môn phái – 31 đường Sư Vạn Hạnh, TP.HCM.\nDưới sự lãnh đạo của Võ sư Chưởng môn Lê Sáng, trong suốt 50 năm với không ít thăng trầm, từ một môn võ thuật phục hồi hoạt động tại Sài Gòn sau 1964, Vovinam – Việt Võ Đạo đã phát triển vượt bậc và mở rộng đến nhiều nơi trên thế giới.",
+      keywords:["Lê Sáng chưởng môn","1960 đến 2010","sinh 1920 mất 2010","31 Sư Vạn Hạnh","50 năm lãnh đạo","phục hồi Sài Gòn sau 1964"]
+    },
+    {
+      docNo:16, long:false,
+      q:"Hãy nêu sơ lược hiểu biết về cố võ sư Chánh chưởng quản Nguyễn Văn Chiếu?",
+      a:"Năm 2010, trước khi qua đời, võ sư Chưởng môn Lê Sáng không lập chưởng môn nữa mà lập ra Hội đồng võ sư Chưởng quản để điều hành và phát triển môn phái, do võ sư Chánh chưởng quản đứng đầu. Võ sư Chánh chưởng quản đầu tiên là võ sư Nguyễn Văn Chiếu.\nVõ sư Nguyễn Văn Chiếu sinh năm 1949, mất năm 2020 tại TP.HCM, quê gốc ở huyện Long Hồ, tỉnh Vĩnh Long. Thầy bắt đầu tập Vovinam vào năm 1965 và dành gần cả cuộc đời gắn bó, có công rất lớn trong việc đưa Vovinam phát triển ra thế giới.\nTrước khi qua đời, thầy là người có đẳng cấp cao nhất môn phái: hồng đai 5 cấp (9 đẳng Vovinam quốc tế).",
+      keywords:["Nguyễn Văn Chiếu","Chánh chưởng quản đầu tiên","Hội đồng võ sư Chưởng quản","sinh 1949 mất 2020","Long Hồ Vĩnh Long","tập Vovinam 1965","hồng đai 5 cấp 9 đẳng"]
+    },
+    {
+      docNo:17, long:true,
+      q:"Hiểu biết về Võ sư Chánh chưởng quản hiện nay?",
+      a:"Võ sư Chánh chưởng quản hiện nay là Võ sư Trần Văn Mỹ (sinh năm 1951), Phó chủ tịch Liên đoàn Vovinam Thế giới, Chủ tịch Liên đoàn Vovinam Việt Nam.\nThầy được Hội đồng Võ sư Chưởng quản bầu làm Chánh chưởng quản vào tháng 5/2024.\nThầy hiện đang sinh sống tại Thành phố Hồ Chí Minh.",
+      keywords:["Trần Văn Mỹ sinh 1951","Phó chủ tịch Liên đoàn Vovinam Thế giới","Chủ tịch Liên đoàn Vovinam Việt Nam","bầu Chánh chưởng quản 5 2024","sống tại TP HCM"]
+    },
+    {
+      docNo:18, long:true,
+      q:"Mười điều tâm niệm của môn sinh Vovinam?",
+      a:"1. Việt Võ Đạo sinh nguyện đạt tới cao độ của nghệ thuật để phục vụ dân tộc và nhân loại.\n2. Nguyện trung kiên phát huy môn phái, xây dựng thế hệ thanh niên dấn thân, hiến ích.\n3. Đồng tâm nhất trí, tôn kính người trên, thương mến đồng đạo.\n4. Tuyệt đối tôn trọng kỷ luật, nêu cao danh dự võ sĩ.\n5. Tôn trọng các võ phái khác, chỉ dùng võ để tự vệ và bênh vực lẽ phải.\n6. Chuyên cần học tập, rèn luyện tinh thần, trau dồi đạo hạnh.\n7. Sống trong sạch, giản dị, trung thực và cao thượng.\n8. Kiện toàn một ý chí đanh thép, nỗ lực tự thân cầu tiến.\n9. Sáng suốt nhận định, bền gan tranh đấu, tháo vát hành động.\n10. Tự tín, tự thắng, khiêm cung, độ lượng, luôn luôn kiểm điểm để tiến bộ.",
+      keywords:["cao độ nghệ thuật phục vụ dân tộc nhân loại","trung kiên phát huy môn phái","đồng tâm tôn kính thương mến","tôn trọng kỷ luật danh dự võ sĩ","tôn trọng võ phái khác tự vệ","chuyên cần học tập đạo hạnh","trong sạch giản dị trung thực cao thượng","ý chí đanh thép tự thân cầu tiến","sáng suốt bền gan tháo vát","tự tín tự thắng khiêm cung độ lượng"]
+    },
+    {
+      docNo:19, long:false,
+      q:"Ý nghĩa đại cương của 10 điều tâm niệm?",
+      a:"Điều 1: Hoài bão và mục đích học võ.\nĐiều 2: Nghĩa vụ đối với môn phái và dân tộc.\nĐiều 3: Tình đoàn kết trong môn phái.\nĐiều 4: Võ kỷ và danh dự võ sĩ.\nĐiều 5: Ý thức dụng võ.\nĐiều 6: Ý hướng học tập và đời sống tinh thần.\nĐiều 7: Tâm nguyện sống.\nĐiều 8: Rèn luyện ý chí.\nĐiều 9: Nếp suy cảm, nghị lực và tính thực tế.\nĐiều 10: Đức sống và tinh thần cầu tiến.",
+      keywords:["điều 1 hoài bão mục đích","điều 2 nghĩa vụ môn phái dân tộc","điều 3 đoàn kết","điều 4 võ kỷ danh dự","điều 5 ý thức dụng võ","điều 6 học tập tinh thần","điều 7 tâm nguyện sống","điều 8 rèn luyện ý chí","điều 9 nghị lực thực tế","điều 10 đức sống cầu tiến"]
+    },
+    {
+      docNo:20, long:false,
+      q:"Ý nghĩa và giải thích đại cương điều tâm niệm số 1?",
+      a:"Điều tâm niệm số 1: Việt Võ Đạo sinh nguyện đạt tới cao độ của nghệ thuật để phục vụ dân tộc và nhân loại.\nĐiều này nói về hoài bão và mục đích tập võ của Việt Võ Đạo sinh: đạt tới cao độ của nghệ thuật để phục vụ dân tộc và nhân loại.",
+      keywords:["cao độ của nghệ thuật","phục vụ dân tộc và nhân loại","hoài bão mục đích tập võ"]
+    },
+    {
+      docNo:21, long:false,
+      q:"Vì sao không hoài bão lớn là đạt đến tuyệt độ của nghệ thuật?",
+      a:"Việt Võ Đạo sinh không mang hoài bão đạt tuyệt độ của nghệ thuật vì nghệ thuật thì khôn cùng, nên chỉ hoài bão những gì hợp tình hợp lý, có thể thực hiện được, chứ không cuồng vọng, không tưởng.",
+      keywords:["nghệ thuật khôn cùng","hợp tình hợp lý có thể thực hiện được","không cuồng vọng không tưởng"]
+    },
+    {
+      docNo:22, long:false,
+      q:"Ý nghĩa và giải thích đại cương điều tâm niệm số 2?",
+      a:"Điều tâm niệm số 2: Nguyện trung kiên phát huy môn phái, xây dựng thế hệ thanh niên dấn thân hiến ích.\nĐiều này nói về nghĩa vụ của Việt Võ Đạo sinh đối với môn phái và dân tộc: trung kiên phát huy môn phái và xây dựng thế hệ thanh niên dấn thân hiến ích.",
+      keywords:["trung kiên phát huy môn phái","thanh niên dấn thân hiến ích","nghĩa vụ với môn phái và dân tộc"]
+    },
+    {
+      docNo:23, long:false,
+      q:"Quan niệm về trung kiên của Việt Võ Đạo sinh ra sao?",
+      a:"Trung kiên là trung thành và kiên định đối với môn phái, với hướng đi của môn phái đã vạch ra, chứ không phải trung kiên với cá nhân nào. Tuy nhiên, nếu một cá nhân đang chấp chưởng công việc phát huy môn phái, đi đúng theo hướng đi đó, thì Việt Võ Đạo sinh phải có nghĩa vụ tiếp tay góp sức, kiên quyết trung thành với cá nhân đó.",
+      keywords:["trung thành kiên định với môn phái","không phải trung kiên với cá nhân","tiếp tay góp sức nếu đi đúng hướng"]
+    },
+    {
+      docNo:24, long:false,
+      q:"Việt Võ Đạo sinh nên làm gì để phát huy môn phái?",
+      a:"Muốn phát huy môn phái, Việt Võ Đạo sinh phải:\n1. Dày công khổ luyện để trở thành võ sư, huấn luyện viên trực tiếp truyền bá võ thuật và võ đạo tới cộng đồng.\n2. Thực tập tinh thần Việt Võ Đạo trong đời sống hằng ngày: trong gia đình là người cha từ, con hiếu, anh hiền, em thảo; với bạn bè giữ thân tình, tín nghĩa; với xã hội là người công dân tốt.",
+      keywords:["dày công khổ luyện thành võ sư huấn luyện viên","truyền bá võ thuật võ đạo cộng đồng","thực tập tinh thần đời sống hằng ngày","gia đình bạn bè xã hội"]
+    },
+    {
+      docNo:25, long:false,
+      q:"Tại sao phải xây dựng thế hệ thanh niên dấn thân hiến ích?",
+      a:"Vì thanh niên là lực lượng khỏe mạnh nhất của đất nước, là tường thành kiên cố để xây dựng và bảo vệ tổ quốc. Tinh thần võ đạo là hạt nhân khơi mở và phát triển lòng yêu nước, chiến đấu cho tổ quốc trường tồn.",
+      keywords:["thanh niên lực lượng khỏe mạnh nhất","tường thành kiên cố xây dựng bảo vệ tổ quốc","tinh thần võ đạo khơi mở lòng yêu nước"]
+    },
+    {
+      docNo:26, long:false,
+      q:"Ý nghĩa và giải thích đại cương điều tâm niệm số 3?",
+      a:"Điều tâm niệm số 3: Đồng tâm nhất trí, tôn kính người trên, thương mến đồng đạo.\nĐiều này nói về tình đoàn kết trong môn phái. Muốn có đoàn kết, Việt Võ Đạo sinh phải đồng tâm nhất trí, đối với người trên phải tôn kính, đối với đồng đạo phải thành thật thương mến nhau.",
+      keywords:["đồng tâm nhất trí","tôn kính người trên","thương mến đồng đạo","tình đoàn kết trong môn phái"]
+    },
+    {
+      docNo:27, long:false,
+      q:"Muốn xây dựng tình đoàn kết trong môn phái, Việt Võ Đạo sinh cần phải làm gì?",
+      a:"Phải loại bỏ mọi thành kiến cá nhân, tiêu trừ lòng tự ái sai lầm và mọi ý nghĩ cá nhân riêng lẻ, không thù hằn đồng môn; nếu có thắc mắc, phải tìm cách giải quyết ngay trong tinh thần xây dựng.",
+      keywords:["loại bỏ thành kiến cá nhân","tiêu trừ tự ái sai lầm","không thù hằn đồng môn","giải quyết thắc mắc tinh thần xây dựng"]
+    },
+    {
+      docNo:28, long:false,
+      q:"Ý nghĩa và giải thích đại cương điều tâm niệm số 4?",
+      a:"Điều tâm niệm số 4: Tuyệt đối tôn trọng kỷ luật, nêu cao danh dự võ sĩ.\nĐiều này nói về võ kỷ và danh dự võ sĩ: tuyệt đối tôn trọng kỷ luật môn phái và luôn nêu cao danh dự võ sĩ.",
+      keywords:["tuyệt đối tôn trọng kỷ luật","nêu cao danh dự võ sĩ","võ kỷ"]
+    },
+    {
+      docNo:29, long:false,
+      q:"Kỷ luật Việt Võ Đạo là kỷ luật gì?",
+      a:"Kỷ luật Việt Võ Đạo là kỷ luật tự giác: tự mình hiểu và tôn trọng kỷ luật, trông gương người trên mà thực hiện. Người trên muốn hướng dẫn người dưới điều gì thì phải làm gương trước; nếu đã làm gương, đã nhắc nhở mà người dưới không tuân thủ thì phải chịu hình thức kỷ luật hoặc đào thải.",
+      keywords:["kỷ luật tự giác","trông gương người trên","người trên làm gương trước","không tuân thủ chịu kỷ luật hoặc đào thải"]
+    },
+    {
+      docNo:30, long:false,
+      q:"Danh dự võ sỹ là gì? Thế nào là anh hùng cá nhân chủ nghĩa?",
+      a:"Danh dự võ sĩ là danh dự của một tập thể người có tư tưởng và hành động hiên ngang, cao cả, bênh vực người yếu bị kẻ mạnh bắt nạt — một thứ danh dự vượt trên lòng tự ái cá nhân để hoà mình vào nền võ đạo.\nAnh hùng cá nhân chủ nghĩa là người có tài nhưng ý thức kỷ luật kém, không chịu khép mình trong khuôn khổ, làm việc tùy hứng, không có chí hướng nhất định.",
+      keywords:["danh dự tập thể hiên ngang cao cả","bênh vực người yếu","vượt trên tự ái cá nhân","anh hùng cá nhân chủ nghĩa","ý thức kỷ luật kém không khép mình khuôn khổ"]
+    }
+  ];
+
+  /* ===================== STATE ===================== */
+  var state = {
+    drawnIdx: [],         // indices into QUESTIONS, in order to ask
+    current: 0,
+    answers: {}           // idx -> {transcript, revealed, percent}
+  };
+
+  /* ===================== TEXT NORMALIZATION (VN, accent-insensitive) ===================== */
+  function stripDiacritics(str){
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/đ/g,'d').replace(/Đ/g,'D');
+  }
+  var STOPWORDS = ["la","cua","va","cac","co","cho","de","trong","voi","mot","nhung","da","nay","do",
+    "o","tai","theo","nhu","khi","ma","thi","nen","vi","con","sau","truoc","hay","hoac","tu","la",
+    "nguoi","duoc","khong","phai","nhung","minh","ca","neu","ra","len","xuong"];
+  function normalizeVN(str){
+    return stripDiacritics(str).toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  function wordsOf(str){
+    return normalizeVN(str).split(' ').filter(function(w){ return w && STOPWORDS.indexOf(w) === -1; });
+  }
+
+  /* ===================== SCORING ===================== */
+  function scoreAnswer(question, transcript){
+    var tWords = {};
+    wordsOf(transcript).forEach(function(w){ tWords[w] = true; });
+    var matched = [], missing = [];
+    question.keywords.forEach(function(phrase){
+      var pw = wordsOf(phrase);
+      if(pw.length === 0) return;
+      var hit = 0;
+      pw.forEach(function(w){ if(tWords[w]) hit++; });
+      var ratio = hit / pw.length;
+      if(ratio >= 0.6){ matched.push(phrase); } else { missing.push(phrase); }
+    });
+    var total = question.keywords.length || 1;
+    var percent = Math.round((matched.length/total)*100);
+    return {percent:percent, matched:matched, missing:missing};
+  }
+
+  /* ===================== DRAW GRID ===================== */
+  var drawGrid = document.getElementById('drawGrid');
+  QUESTIONS.forEach(function(q, i){
+    var t = document.createElement('div');
+    t.className = 'tile';
+    t.textContent = q.docNo;
+    t.dataset.idx = i;
+    drawGrid.appendChild(t);
+  });
+  var tiles = Array.prototype.slice.call(drawGrid.children);
+
+  function shuffleArr(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+
+  var btnDraw = document.getElementById('btnDraw');
+  var btnStart = document.getElementById('btnStart');
+  var picksSummary = document.getElementById('picksSummary');
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  btnDraw.addEventListener('click', function(){
+    btnDraw.disabled = true;
+    btnStart.style.display = 'none';
+    tiles.forEach(function(t){ t.className = 'tile'; });
+    picksSummary.textContent = 'Đang bốc thăm…';
+
+    var pool = shuffleArr(QUESTIONS.map(function(q,i){return i;}));
+    var draw3 = pool.slice(0,3);
+    var longOnes = draw3.filter(function(i){ return QUESTIONS[i].long; });
+    var finalSet;
+    if(longOnes.length > 0){
+      var longPick = longOnes[0];
+      var shortCandidates = draw3.filter(function(i){ return !QUESTIONS[i].long; });
+      var shortPick = shortCandidates.length > 0
+        ? shortCandidates[0]
+        : pool.find(function(i){ return !QUESTIONS[i].long && i !== longPick; });
+      finalSet = [longPick, shortPick];
+    } else {
+      finalSet = draw3;
+    }
+
+    function finish(){
+      tiles.forEach(function(t){ t.classList.remove('flash'); });
+      finalSet.forEach(function(idx){
+        var t = tiles[idx];
+        t.classList.add(QUESTIONS[idx].long ? 'picked-long' : 'picked');
+      });
+      var labels = finalSet.map(function(idx){
+        var q = QUESTIONS[idx];
+        return '<b>Câu ' + q.docNo + '</b>' + (q.long ? '<span class="tag-long">đáp dài</span>' : '');
+      });
+      var note = finalSet.length === 2
+        ? ' — bộ đề rút xuống còn 2 câu vì có câu đáp dài, đúng quy định thi.'
+        : '';
+      picksSummary.innerHTML = 'Bộ đề của bạn: ' + labels.join(', ') + note;
+
+      state.drawnIdx = finalSet;
+      state.current = 0;
+      state.answers = {};
+      finalSet.forEach(function(idx){ state.answers[idx] = {transcript:'', revealed:false, percent:0}; });
+
+      btnDraw.disabled = false;
+      btnDraw.textContent = '🎲 Bốc lại';
+      btnStart.style.display = 'inline-flex';
+    }
+
+    if(reducedMotion){
+      finish();
+      return;
+    }
+    var ticks = 0, maxTicks = 14;
+    var iv = setInterval(function(){
+      tiles.forEach(function(t){ t.classList.remove('flash'); });
+      shuffleArr(tiles.map(function(t,i){return i;})).slice(0,3).forEach(function(i){
+        tiles[i].classList.add('flash');
+      });
+      ticks++;
+      if(ticks >= maxTicks){
+        clearInterval(iv);
+        finish();
+      }
+    }, 70);
+  });
+
+  /* study list (preview all 20 questions) */
+  var studyList = document.getElementById('studyList');
+  QUESTIONS.forEach(function(q){
+    var li = document.createElement('li');
+    li.textContent = q.q;
+    studyList.appendChild(li);
+  });
+
+  /* ===================== SCREEN SWITCHING ===================== */
+  var screens = {
+    draw: document.getElementById('screen-draw'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result')
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle('active', k===name);
+    });
+  }
+
+  btnStart.addEventListener('click', function(){
+    state.current = 0;
+    showScreen('quiz');
+    renderQuestion();
+  });
+
+  /* ===================== SPEECH RECOGNITION SETUP ===================== */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null;
+  var recognizing = false;
+  var supportNote = document.getElementById('supportNote');
+  var btnMic = document.getElementById('btnMic');
+  var micLabel = document.getElementById('micLabel');
+  var micError = document.getElementById('micError');
+  var transcriptBox = document.getElementById('transcriptBox');
+
+  if(!SR){
+    supportNote.classList.add('show');
+    btnMic.disabled = true;
+    micLabel.textContent = 'Ghi âm không khả dụng trên trình duyệt này';
+  } else {
+    recognition = new SR();
+    recognition.lang = 'vi-VN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = function(e){
+      var idx = state.drawnIdx[state.current];
+      var rec = state.answers[idx];
+      var interim = '';
+      for(var i=e.resultIndex; i<e.results.length; i++){
+        var piece = e.results[i][0].transcript;
+        if(e.results[i].isFinal){
+          rec.transcript = (rec.transcript + ' ' + piece).trim();
+        } else {
+          interim += piece;
+        }
+      }
+      renderTranscript(rec.transcript, interim);
+    };
+    recognition.onerror = function(e){
+      micError.textContent = e.error === 'not-allowed'
+        ? 'Trình duyệt chưa được cấp quyền micro. Hãy cho phép truy cập micro rồi thử lại.'
+        : 'Có lỗi nhận diện giọng nói (' + e.error + '). Thử lại nhé.';
+      stopMic();
+    };
+    recognition.onend = function(){
+      if(recognizing){ recognizing = false; updateMicButton(); }
+    };
+  }
+
+  function renderTranscript(finalText, interimText){
+    transcriptBox.innerHTML = '';
+    if(!finalText && !interimText){
+      var ph = document.createElement('span');
+      ph.className = 'placeholder';
+      ph.textContent = 'Bản ghi câu trả lời của bạn sẽ hiện ở đây…';
+      transcriptBox.appendChild(ph);
+      return;
+    }
+    transcriptBox.appendChild(document.createTextNode(finalText));
+    if(interimText){
+      var span = document.createElement('span');
+      span.className = 'interim';
+      span.textContent = ' ' + interimText;
+      transcriptBox.appendChild(span);
+    }
+  }
+
+  function updateMicButton(){
+    btnMic.classList.toggle('recording', recognizing);
+    btnMic.setAttribute('aria-pressed', recognizing ? 'true' : 'false');
+    micLabel.textContent = recognizing ? 'Đang nghe… nhấn để dừng' : 'Nhấn để bắt đầu trả lời';
+  }
+
+  function startMic(){
+    if(!recognition) return;
+    micError.textContent = '';
+    try{
+      recognition.start();
+      recognizing = true;
+      updateMicButton();
+    }catch(err){
+      micError.textContent = 'Không thể bắt đầu ghi âm. Thử nhấn lại.';
+    }
+  }
+  function stopMic(){
+    if(!recognition) return;
+    try{ recognition.stop(); }catch(err){}
+    recognizing = false;
+    updateMicButton();
+  }
+
+  btnMic.addEventListener('click', function(){
+    if(recognizing){ stopMic(); } else { startMic(); }
+  });
+
+  /* TTS */
+  document.getElementById('btnListen').addEventListener('click', function(){
+    var idx = state.drawnIdx[state.current];
+    var text = QUESTIONS[idx].q;
+    if(!('speechSynthesis' in window)){
+      alert('Trình duyệt này không hỗ trợ đọc văn bản. Hãy tự đọc to câu hỏi nhé.');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'vi-VN';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  });
+
+  /* ===================== RENDER QUIZ ===================== */
+  var progressRow = document.getElementById('progressRow');
+  var qNo = document.getElementById('qNo');
+  var qLongPill = document.getElementById('qLongPill');
+  var qText = document.getElementById('qText');
+  var btnReveal = document.getElementById('btnReveal');
+  var scorePanel = document.getElementById('scorePanel');
+  var scoreNum = document.getElementById('scoreNum');
+  var scoreBar = document.getElementById('scoreBar');
+  var chipsMatched = document.getElementById('chipsMatched');
+  var chipsMissing = document.getElementById('chipsMissing');
+  var fullAnswerText = document.getElementById('fullAnswerText');
+  var btnPrev = document.getElementById('btnPrev');
+  var btnNext = document.getElementById('btnNext');
+
+  function renderQuestion(){
+    if(recognizing) stopMic();
+    var total = state.drawnIdx.length;
+    var idx = state.drawnIdx[state.current];
+    var q = QUESTIONS[idx];
+    var rec = state.answers[idx];
+
+    progressRow.innerHTML = '';
+    state.drawnIdx.forEach(function(_, i){
+      var d = document.createElement('div');
+      d.className = 'dot' + (i < state.current ? ' fill' : '') + (i === state.current ? ' current' : '');
+      progressRow.appendChild(d);
+    });
+
+    qNo.textContent = 'Câu ' + (state.current+1) + '/' + total + ' · Số ' + q.docNo;
+    qLongPill.classList.toggle('show', !!q.long);
+    qText.textContent = q.q;
+
+    renderTranscript(rec.transcript, '');
+    micError.textContent = '';
+    updateMicButton();
+
+    scorePanel.style.display = rec.revealed ? 'block' : 'none';
+    btnReveal.textContent = rec.revealed ? '🔄 Chấm lại theo bản ghi mới nhất' : '✅ Xem đáp án & chấm nhanh';
+    if(rec.revealed){ paintScore(q, rec); }
+
+    btnPrev.disabled = state.current === 0;
+    btnNext.textContent = (state.current === total-1) ? 'Xem kết quả tổng kết →' : 'Câu tiếp theo →';
+  }
+
+  function paintScore(q, rec){
+    var result = scoreAnswer(q, rec.transcript);
+    rec.percent = result.percent;
+    rec.revealed = true;
+    scoreNum.textContent = result.percent + '%';
+    scoreBar.style.width = result.percent + '%';
+    chipsMatched.innerHTML = '';
+    chipsMissing.innerHTML = '';
+    if(result.matched.length === 0){
+      var none = document.createElement('span');
+      none.className = 'chip missing';
+      none.textContent = 'Chưa nhắc ý nào khớp';
+      chipsMatched.appendChild(none);
+    }
+    result.matched.forEach(function(p){
+      var c = document.createElement('span'); c.className='chip matched'; c.textContent='✓ '+p;
+      chipsMatched.appendChild(c);
+    });
+    result.missing.forEach(function(p){
+      var c = document.createElement('span'); c.className='chip missing'; c.textContent=p;
+      chipsMissing.appendChild(c);
+    });
+    fullAnswerText.textContent = q.a;
+    scorePanel.style.display = 'block';
+  }
+
+  btnReveal.addEventListener('click', function(){
+    var idx = state.drawnIdx[state.current];
+    paintScore(QUESTIONS[idx], state.answers[idx]);
+  });
+
+  btnPrev.addEventListener('click', function(){
+    if(state.current > 0){ state.current--; renderQuestion(); }
+  });
+  btnNext.addEventListener('click', function(){
+    var total = state.drawnIdx.length;
+    if(state.current < total-1){
+      state.current++;
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  });
+
+  /* ===================== RESULTS ===================== */
+  var avgScore = document.getElementById('avgScore');
+  var resultList = document.getElementById('resultList');
+
+  function showResults(){
+    if(recognizing) stopMic();
+    var sum = 0;
+    resultList.innerHTML = '';
+    state.drawnIdx.forEach(function(idx){
+      var q = QUESTIONS[idx];
+      var rec = state.answers[idx];
+      if(!rec.revealed){
+        var r = scoreAnswer(q, rec.transcript);
+        rec.percent = rec.transcript ? r.percent : 0;
+      }
+      sum += rec.percent;
+      var row = document.createElement('div');
+      row.className = 'result-item';
+      var cls = rec.percent >= 70 ? 'good' : (rec.percent >= 40 ? 'mid' : 'low');
+      row.innerHTML =
+        '<span class="ri-no">#'+q.docNo+'</span>'+
+        '<span class="ri-text">'+q.q+'</span>'+
+        '<span class="ri-score '+cls+'">'+(rec.transcript ? rec.percent+'%' : '—')+'</span>';
+      resultList.appendChild(row);
+    });
+    var avg = Math.round(sum / state.drawnIdx.length);
+    avgScore.textContent = avg + '%';
+    showScreen('result');
+  }
+
+  document.getElementById('btnRetry').addEventListener('click', function(){
+    btnDraw.textContent = '🎲 Bốc thăm câu hỏi';
+    picksSummary.textContent = 'Nhấn nút bên dưới để bốc 3 câu, đúng như quy định thi vấn đáp.';
+    tiles.forEach(function(t){ t.className = 'tile'; });
+    btnStart.style.display = 'none';
+    showScreen('draw');
+  });
+
+})();
+</script>
+</body>
+</html>
